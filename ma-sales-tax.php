@@ -159,13 +159,18 @@ class MA_Sales_Tax {
         }
         
         $quarter = isset($_GET['quarter']) ? intval($_GET['quarter']) : 1;
+        $quarter = ($quarter >= 1 && $quarter <= 4) ? $quarter : 1;
+        
         $year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');
+        $current_year = date('Y');
+        $year = ($year >= 2000 && $year <= $current_year + 1) ? $year : $current_year;
         
         $data = $this->get_ma_sales_data($quarter, $year);
         
         // Set headers for CSV download
+        $filename = sanitize_file_name('ma-sales-tax-q' . $quarter . '-' . $year . '.csv');
         header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=ma-sales-tax-q' . $quarter . '-' . $year . '.csv');
+        header('Content-Disposition: attachment; filename=' . $filename);
         header('Pragma: no-cache');
         header('Expires: 0');
         
@@ -227,7 +232,10 @@ class MA_Sales_Tax {
         $current_year = date('Y');
         
         $quarter = isset($_GET['quarter']) ? intval($_GET['quarter']) : $current_quarter;
+        $quarter = ($quarter >= 1 && $quarter <= 4) ? $quarter : $current_quarter;
+        
         $year = isset($_GET['year']) ? intval($_GET['year']) : $current_year;
+        $year = ($year >= 2000 && $year <= $current_year + 1) ? $year : $current_year;
         
         $data = array();
         if (class_exists('WooCommerce')) {
@@ -266,7 +274,7 @@ class MA_Sales_Tax {
                                 <select name="year" id="year">
                                     <?php
                                     for ($y = $current_year; $y >= $current_year - 5; $y--) {
-                                        echo '<option value="' . $y . '"' . selected($year, $y, false) . '>' . $y . '</option>';
+                                        echo '<option value="' . esc_attr($y) . '"' . selected($year, $y, false) . '>' . esc_html($y) . '</option>';
                                     }
                                     ?>
                                 </select>
@@ -330,14 +338,14 @@ class MA_Sales_Tax {
                             <?php foreach ($data['orders'] as $order): ?>
                                 <tr>
                                     <td>
-                                        <a href="<?php echo admin_url('post.php?post=' . $order['order_id'] . '&action=edit'); ?>">
-                                            #<?php echo $order['order_id']; ?>
+                                        <a href="<?php echo esc_url(admin_url('post.php?post=' . absint($order['order_id']) . '&action=edit')); ?>">
+                                            #<?php echo absint($order['order_id']); ?>
                                         </a>
                                     </td>
-                                    <td><?php echo date('M d, Y', strtotime($order['date'])); ?></td>
-                                    <td style="text-align: right;">$<?php echo number_format($order['subtotal'], 2); ?></td>
-                                    <td style="text-align: right;">$<?php echo number_format($order['tax'], 2); ?></td>
-                                    <td style="text-align: right;">$<?php echo number_format($order['total'], 2); ?></td>
+                                    <td><?php echo esc_html(date('M d, Y', strtotime($order['date']))); ?></td>
+                                    <td style="text-align: right;">$<?php echo esc_html(number_format($order['subtotal'], 2)); ?></td>
+                                    <td style="text-align: right;">$<?php echo esc_html(number_format($order['tax'], 2)); ?></td>
+                                    <td style="text-align: right;">$<?php echo esc_html(number_format($order['total'], 2)); ?></td>
                                     <td><?php echo esc_html($order['billing_city']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
