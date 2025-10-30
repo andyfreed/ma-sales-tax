@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/andyfreed/ma-sales-tax
  * Description: Track and export Massachusetts sales tax data by quarter and year
  * Version: 1.0.0
- * Author: Andy Freed
+ * Author: Skynet
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: ma-sales-tax
